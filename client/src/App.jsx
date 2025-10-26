@@ -9,6 +9,7 @@ import Contact from "./components/Contact";
 import Footer from "./components/Footer";
 import Register from "./pages/Register";
 import "./assets/css/style.css";
+import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
 
 const App = () => {
@@ -35,6 +36,7 @@ const App = () => {
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
         <Route path="register" element={<Services />} />
+        <Route path="/dashboard" element={<Dashboard />} />
       </Routes>
     </Router>
   );
