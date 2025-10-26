@@ -1,6 +1,7 @@
 import React from "react";
 import { IonIcon } from "@ionic/react";
-import { Link } from "react-router-dom";
+import { Link, Link as ScrollLink } from "react-scroll";
+import { Link as RouterLink } from "react-router-dom";
 import { barbellSharp, closeSharp } from "ionicons/icons";
 
 const Header = () => {
@@ -13,23 +14,81 @@ const Header = () => {
         </a>
 
         <nav className="navbar" data-navbar>
-          <button className="nav-close-btn" aria-label="close menu" data-nav-toggler>
+          <button
+            className="nav-close-btn"
+            aria-label="close menu"
+            data-nav-toggler
+          >
             <IonIcon icon={closeSharp} aria-hidden="true" />
           </button>
 
           <ul className="navbar-list">
-            <li><Link to="#home" className="navbar-link active" data-nav-link>Home</Link></li>
-            <li><Link to="#about" className="navbar-link" data-nav-link>About Us</Link></li>
-            <li><Link to="#class" className="navbar-link" data-nav-link>Our Services</Link></li>
-            <li><Link to="/register" className="navbar-link" data-nav-link>Start Today</Link></li>
-            <li><Link to="#contact" className="navbar-link" data-nav-link>Contact Us</Link></li>
-
+            <li>
+              <ScrollLink
+                to="home"
+                smooth={true}
+                duration={600}
+                offset={-80}
+                className="navbar-link active"
+              >
+                Home
+              </ScrollLink>
+            </li>
+            <li>
+              <ScrollLink
+                to="about"
+                smooth={true}
+                duration={600}
+                offset={-80}
+                className="navbar-link"
+              >
+                About Us
+              </ScrollLink>
+            </li>
+            <li>
+              <ScrollLink
+                to="class"
+                smooth={true}
+                duration={600}
+                offset={-80}
+                className="navbar-link"
+              >
+                Our Services
+              </ScrollLink>
+            </li>
+            <li>
+              <ScrollLink
+                to="blog"
+                smooth={true}
+                duration={600}
+                offset={-80} // adjust if needed for header height
+                className="navbar-link"
+              >
+                Start Today
+              </ScrollLink>
+            </li>
+            <li>
+              <ScrollLink
+                to="contact"
+                smooth={true}
+                duration={600}
+                offset={-80}
+                className="navbar-link"
+              >
+                Contact Us
+              </ScrollLink>
+            </li>
           </ul>
         </nav>
 
-        <a href="#" className="btn btn-secondary">Join Now</a>
-
-        <button className="nav-open-btn" aria-label="open menu" data-nav-toggler>
+        <a href="/register" className="btn btn-secondary">
+          Join Now
+        </a>
+        <button
+          className="nav-open-btn"
+          aria-label="open menu"
+          data-nav-toggler
+        >
           <span className="line"></span>
           <span className="line"></span>
           <span className="line"></span>
