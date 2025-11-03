@@ -10,64 +10,65 @@ import Footer from "./components/Footer";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
+import Workouts from "./pages/Workouts";
+import Nutrition from "./pages/Nutrition";
 import ProtectedRoute from "./components/ProtectedRoute";
 import "./assets/css/style.css";
 
-const App = () => {
-  return (
-    <Router>
-      <Routes>
-        {/* ===== Main Landing Page ===== */}
-        <Route
-          path="/"
-          element={
-            <>
-              <Header />
+const App = () => (
+  <Router>
+    <Routes>
+      {/* ===== Public Landing Page ===== */}
+      <Route
+        path="/"
+        element={
+          <>
+            <Header />
+            <main>
+              <section id="home"><Hero /></section>
+              <section id="about"><About /></section>
+              <section id="class"><Services /></section>
+              <section id="blog"><Blog /></section>
+              <section id="contact"><Contact /></section>
+            </main>
+            <Footer />
+          </>
+        }
+      />
 
-              <main>
-                {/* Each section has an ID that matches react-scroll 'to' prop */}
-                <section id="home">
-                  <Hero />
-                </section>
+      {/* ===== Auth Pages ===== */}
+      <Route path="/register" element={<Register />} />
+      <Route path="/login" element={<Login />} />
 
-                <section id="about">
-                  <About />
-                </section>
+      {/* ===== Protected Dashboard Routes ===== */}
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        }
+      />
 
-                <section id="class">
-                  <Services />
-                </section>
+      <Route
+        path="/workouts"
+        element={
+          <ProtectedRoute>
+            <Workouts />
+          </ProtectedRoute>
+        }
+      />
 
-                <section id="blog">
-                  <Blog />
-                </section>
-
-                <section id="contact">
-                  <Contact />
-                </section>
-              </main>
-
-              <Footer />
-            </>
-          }
-        />
-
-{/* Auth Pages */}
-        <Route path="/register" element={<Register />} />
-        <Route path="/login" element={<Login />} />
-
-        {/* Protected Dashboard */}
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          }
-        />
-      </Routes>
-    </Router>
-  );
-};
+      <Route
+        path="/nutrition"
+        element={
+          <ProtectedRoute>
+            <Nutrition />
+          </ProtectedRoute>
+        }
+      />
+    </Routes>
+  </Router>
+);
 
 export default App;

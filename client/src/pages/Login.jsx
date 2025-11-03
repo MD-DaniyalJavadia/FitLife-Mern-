@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import "../assets/css/Auth.css"; // existing CSS
+import "../assets/css/Auth.css";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -10,26 +10,39 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    try {
-      const response = await axios.post("http://localhost:3000/api/routes/login", {
-        UserEmail: email,
-        UserPassword: password,
-      });
 
-      // login success
-      localStorage.setItem("isAuthenticated", "true");
-      alert(response.data);
-      navigate("/dashboard");
+    try {
+      const response = await axios.post(
+        "http://localhost:3000/api/auth/login",
+        {
+          UserEmail: email.trim(),
+          UserPassword: password,
+        },
+        { withCredentials: true } // for JWT cookie
+      );
+
+      // backend should return JWT or success message
+      if (response.data.token) {
+        localStorage.setItem("token", response.data.token);
+        //alert("Login Successful!");
+        navigate("/dashboard");
+      } else {
+        //alert(response.data || "Login Successful!");
+        navigate("/dashboard");
+      }
     } catch (error) {
       console.error(error);
-      alert("Invalid Credentials, try again!");
+      if (error.response && error.response.data)
+        alert(error.response.data);
+      else alert("Invalid credentials, try again!");
     }
   };
 
   return (
     <section className="auth-section">
       <div className="auth-container">
-        <h2 className="auth-title">Login to Fitlife</h2>
+        <h2 className="auth-title">Login to FitLife</h2>
+
         <form className="auth-form" onSubmit={handleLogin}>
           <div className="form-group">
             <label htmlFor="email">Email</label>
@@ -61,10 +74,15 @@ const Login = () => {
         </form>
 
         <p className="switch-text">
-          Don’t have an account? <Link to="/register" className="switch-link">Register here</Link>
+          Don’t have an account?{" "}
+          <Link to="/register" className="switch-link">
+            Register here
+          </Link>
         </p>
 
-        <Link to="/" className="back-home">← Back to Home</Link>
+        <Link to="/" className="back-home">
+          ← Back to Home
+        </Link>
       </div>
     </section>
   );

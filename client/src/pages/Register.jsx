@@ -11,25 +11,33 @@ const Register = () => {
 
   const handleRegister = async (e) => {
     e.preventDefault();
-    try {
-      const response = await axios.post("http://localhost:3000/api/routes/register", {
-        UserName: userName,
-        UserEmail: userEmail,
-        UserPassword: userPassword,
-      });
 
-      alert(response.data);
-      navigate("/dashboard");
+    try {
+      const response = await axios.post(
+        "http://localhost:3000/api/auth/register",
+        {
+          UserName: userName.trim(),
+          UserEmail: userEmail.trim(),
+          UserPassword: userPassword,
+        },
+        { withCredentials: true } // include cookies for JWT
+      );
+
+      //alert(response.data || "User registered successfully!");
+      navigate("/login"); // after register → login
     } catch (error) {
       console.error(error);
-      alert("Error registering user. Try again.");
+      if (error.response && error.response.data)
+        alert(error.response.data);
+      else alert("Error registering user. Try again.");
     }
   };
 
   return (
     <section className="auth-section">
       <div className="auth-container">
-        <h2 className="auth-title">Create Your Fitlife Account</h2>
+        <h2 className="auth-title">Create Your FitLife Account</h2>
+
         <form className="auth-form" onSubmit={handleRegister}>
           <div className="form-group">
             <label htmlFor="name">Full Name</label>
@@ -73,10 +81,15 @@ const Register = () => {
         </form>
 
         <p className="switch-text">
-          Already have an account? <Link to="/login" className="switch-link">Login here</Link>
+          Already have an account?{" "}
+          <Link to="/login" className="switch-link">
+            Login here
+          </Link>
         </p>
 
-        <Link to="/" className="back-home">← Back to Home</Link>
+        <Link to="/" className="back-home">
+          ← Back to Home
+        </Link>
       </div>
     </section>
   );
