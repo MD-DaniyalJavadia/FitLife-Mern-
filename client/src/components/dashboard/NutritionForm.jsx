@@ -47,10 +47,41 @@ const NutritionForm = ({ onSubmit, editing, onCancel }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="card p-3 mb-3">
-      <div className="row g-2">
-        <div className="col-md-3">
-          <label>Meal Type</label>
+    <div
+      style={{
+        maxWidth: "700px",
+        margin: "40px auto",
+        backgroundColor: "#fff",
+        borderRadius: "10px",
+        boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+        padding: "30px",
+      }}
+    >
+      <h3
+        style={{
+          textAlign: "center",
+          fontWeight: "600",
+          marginBottom: "25px",
+        }}
+      >
+        Nutrition Tracker
+      </h3>
+
+      <form onSubmit={handleSubmit}>
+        <div className="mb-3">
+          <label style={{ fontWeight: 500 }}>Food Name</label>
+          <input
+            type="text"
+            className="form-control"
+            value={foodName}
+            onChange={(e) => setFoodName(e.target.value)}
+            placeholder="Enter food name"
+            required
+          />
+        </div>
+
+        <div className="mb-3">
+          <label style={{ fontWeight: 500 }}>Meal Type</label>
           <select
             className="form-control"
             value={mealType}
@@ -63,79 +94,104 @@ const NutritionForm = ({ onSubmit, editing, onCancel }) => {
           </select>
         </div>
 
-        <div className="col-md-3">
-          <label>Food Name</label>
-          <input
-            type="text"
-            className="form-control"
-            value={foodName}
-            onChange={(e) => setFoodName(e.target.value)}
-            required
-          />
+        <h6 style={{ color: "green", fontWeight: 600, marginTop: "25px" }}>
+          Nutrition Facts
+        </h6>
+
+        <div
+          style={{
+            border: "1px solid #ddd",
+            borderRadius: "8px",
+            padding: "15px",
+            marginBottom: "15px",
+          }}
+        >
+          <div className="row g-3 align-items-center">
+            <div className="col">
+              <label>Calories</label>
+              <input
+                type="number"
+                className="form-control"
+                value={calories}
+                onChange={(e) => setCalories(e.target.value)}
+              />
+            </div>
+            <div className="col">
+              <label>Protein (g)</label>
+              <input
+                type="number"
+                className="form-control"
+                value={protein}
+                onChange={(e) => setProtein(e.target.value)}
+              />
+            </div>
+            <div className="col">
+              <label>Carbs (g)</label>
+              <input
+                type="number"
+                className="form-control"
+                value={carbs}
+                onChange={(e) => setCarbs(e.target.value)}
+              />
+            </div>
+            <div className="col">
+              <label>Fat (g)</label>
+              <input
+                type="number"
+                className="form-control"
+                value={fat}
+                onChange={(e) => setFat(e.target.value)}
+              />
+            </div>
+          </div>
         </div>
 
-        <div className="col-md-2">
-          <label>Calories</label>
-          <input
-            type="number"
+        <div className="mb-3">
+          <label style={{ fontWeight: 500 }}>Notes</label>
+          <textarea
             className="form-control"
-            value={calories}
-            onChange={(e) => setCalories(e.target.value)}
-          />
+            rows="2"
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            placeholder="Optional notes..."
+          ></textarea>
         </div>
 
-        <div className="col-md-1">
-          <label>Protein</label>
-          <input
-            type="number"
-            className="form-control"
-            value={protein}
-            onChange={(e) => setProtein(e.target.value)}
-          />
-        </div>
-
-        <div className="col-md-1">
-          <label>Carbs</label>
-          <input
-            type="number"
-            className="form-control"
-            value={carbs}
-            onChange={(e) => setCarbs(e.target.value)}
-          />
-        </div>
-
-        <div className="col-md-1">
-          <label>Fat</label>
-          <input
-            type="number"
-            className="form-control"
-            value={fat}
-            onChange={(e) => setFat(e.target.value)}
-          />
-        </div>
-      </div>
-
-      <div className="mt-2">
-        <label>Notes</label>
-        <textarea
-          className="form-control"
-          value={notes}
-          onChange={(e) => setNotes(e.target.value)}
-          rows="2"
-        ></textarea>
-      </div>
-
-      <div className="mt-3 d-flex gap-2">
-        <button type="submit" className="btn btn-primary">
-          {editing ? "Update" : "Add"}
+        {/* Green Add-style button (optional) */}
+        <button
+          type="button"
+          onClick={resetForm}
+          style={{
+            width: "100%",
+            backgroundColor: "#28a745",
+            color: "white",
+            border: "none",
+            borderRadius: "6px",
+            padding: "10px",
+            fontWeight: "500",
+            marginBottom: "15px",
+          }}
+        >
+          + Add Food
         </button>
-        {editing && (
-          <button type="button" className="btn btn-secondary" onClick={onCancel}>
-            Cancel
-          </button>
-        )}
-      </div>
-    </form>
+
+        {/* Orange Save button */}
+        <button
+          type="submit"
+          style={{
+            width: "100%",
+            backgroundColor: "#ff4500",
+            color: "white",
+            border: "none",
+            borderRadius: "6px",
+            padding: "10px",
+            fontWeight: "500",
+          }}
+        >
+          SAVE
+        </button>
+      </form>
+    </div>
   );
 };
 

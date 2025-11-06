@@ -3,8 +3,8 @@ import axios from "axios";
 
 const Workouts = () => {
   const [workout, setWorkout] = useState({
-    name: "",
-    category: "Strength",
+    workoutName: "",
+    category: "strength", // lowercase for enum
     exercises: [{ name: "", sets: "", reps: "", weight: "" }],
   });
 
@@ -33,12 +33,26 @@ const Workouts = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:3000/api/workouts", workout, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      const response = await axios.post(
+        "http://localhost:3000/api/workouts",
+        workout,
+        { withCredentials: true }
+      );
+      alert(response.data.message || "Workout saved successfully");
+
+      // Reset form
+      setWorkout({
+        workoutName: "",
+        category: "strength",
+        exercises: [{ name: "", sets: "", reps: "", weight: "" }],
       });
-      alert("Workout saved successfully");
     } catch (err) {
-      alert("Error saving workout");
+      console.error("Error saving workout:", err.response || err);
+      if (err.response?.data?.error) {
+        alert(`Error: ${err.response.data.error}`);
+      } else {
+        alert("Error saving workout. Try again.");
+      }
     }
   };
 
@@ -63,8 +77,8 @@ const Workouts = () => {
           <label>Workout Name</label>
           <input
             type="text"
-            name="name"
-            value={workout.name}
+            name="workoutName"
+            value={workout.workoutName}
             onChange={handleChange}
             required
             style={{
@@ -91,13 +105,13 @@ const Workouts = () => {
               marginTop: "5px",
             }}
           >
-            <option value="Strength">Strength</option>
-            <option value="Cardio">Cardio</option>
-            <option value="Flexibility">Flexibility</option>
+            <option value="strength">Strength</option>
+            <option value="cardio">Cardio</option>
+            <option value="flexibility">Flexibility</option>
           </select>
         </div>
 
-        {/* Exercises */}
+        {/* Exercises Section */}
         <h4 style={{ marginBottom: "10px", color: "#4CAF50" }}>Exercises</h4>
         {workout.exercises.map((exercise, index) => (
           <div
@@ -119,7 +133,7 @@ const Workouts = () => {
               <input
                 type="text"
                 name="name"
-                placeholder="Name"
+                placeholder="Exercise Name"
                 value={exercise.name}
                 onChange={(e) => handleExerciseChange(index, e)}
               />

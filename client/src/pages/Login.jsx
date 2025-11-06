@@ -12,26 +12,40 @@ const Login = () => {
     e.preventDefault();
 
     try {
+      console.log("Sending login request with:", {
+        UserEmail: email.trim(),
+        UserPassword: password,
+      });
+
       const response = await axios.post(
         "http://localhost:3000/api/auth/login",
         {
           UserEmail: email.trim(),
           UserPassword: password,
         },
-        { withCredentials: true } // for JWT cookie
+        { withCredentials: true } // If backend sends cookies
       );
 
-      // backend should return JWT or success message
+      console.log("Server response:", response.data);
+
       if (response.data.token) {
+        console.log("Token received from backend:", response.data.token);
+
+        // Save token to localStorage
         localStorage.setItem("token", response.data.token);
-        //alert("Login Successful!");
+
+        // Check if it's actually stored
+        console.log("Token stored in localStorage:", localStorage.getItem("token"));
+
+        // Redirect to dashboard
         navigate("/dashboard");
       } else {
-        //alert(response.data || "Login Successful!");
+        console.warn("No token found in response! Response data:", response.data);
         navigate("/dashboard");
       }
     } catch (error) {
-      console.error(error);
+      console.error("Login error:", error);
+
       if (error.response && error.response.data)
         alert(error.response.data);
       else alert("Invalid credentials, try again!");

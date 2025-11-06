@@ -11,17 +11,18 @@ router.post('/', verifyToken, async (req, res) => {
     await workout.save();
     res.status(201).json({ message: 'Workout created', workout });
   } catch (err) {
-    console.error(err);
+    console.error('Error creating workout:', err.message);
     res.status(500).json({ error: 'Error creating workout' });
   }
 });
 
-// Get all workouts for logged user
+// Get all workouts for logged-in user
 router.get('/', verifyToken, async (req, res) => {
   try {
     const workouts = await Workout.find({ userId: req.user.id }).sort({ createdAt: -1 });
     res.json(workouts);
   } catch (err) {
+    console.error('Error fetching workouts:', err.message);
     res.status(500).json({ error: 'Error fetching workouts' });
   }
 });
@@ -33,6 +34,7 @@ router.get('/:id', verifyToken, async (req, res) => {
     if (!workout) return res.status(404).json({ error: 'Workout not found' });
     res.json(workout);
   } catch (err) {
+    console.error('Error fetching workout:', err.message);
     res.status(500).json({ error: 'Error fetching workout' });
   }
 });
@@ -48,6 +50,7 @@ router.put('/:id', verifyToken, async (req, res) => {
     if (!updated) return res.status(404).json({ error: 'Workout not found' });
     res.json({ message: 'Workout updated', workout: updated });
   } catch (err) {
+    console.error('Error updating workout:', err.message);
     res.status(500).json({ error: 'Error updating workout' });
   }
 });
@@ -55,13 +58,11 @@ router.put('/:id', verifyToken, async (req, res) => {
 // Delete workout
 router.delete('/:id', verifyToken, async (req, res) => {
   try {
-    const deleted = await Workout.findOneAndDelete({
-      _id: req.params.id,
-      userId: req.user.id
-    });
+    const deleted = await Workout.findOneAndDelete({ _id: req.params.id, userId: req.user.id });
     if (!deleted) return res.status(404).json({ error: 'Workout not found' });
     res.json({ message: 'Workout deleted' });
   } catch (err) {
+    console.error('Error deleting workout:', err.message);
     res.status(500).json({ error: 'Error deleting workout' });
   }
 });
