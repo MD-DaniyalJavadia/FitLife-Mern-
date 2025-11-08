@@ -1,8 +1,9 @@
+// src/pages/Dashboard.jsx
 import React, { useEffect, useState } from "react";
 import Sidebar from "../components/dashboard/Sidebar";
 import Navbar from "../components/dashboard/Navbar";
 import StatsCard from "../components/dashboard/StatsCard";
-import api from "../api/axios"; 
+import api from "../api/axios";
 import { Bar, Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -49,7 +50,7 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
-    // Load CSS dynamically
+    // Load KaiAdmin CSS
     const styles = [
       "/admin/css/bootstrap.min.css",
       "/admin/css/plugins.min.css",
@@ -57,6 +58,7 @@ const Dashboard = () => {
       "/admin/css/demo.css",
       "/admin/css/fonts.min.css",
     ];
+
     const links = styles.map((href) => {
       const link = document.createElement("link");
       link.rel = "stylesheet";
@@ -67,31 +69,41 @@ const Dashboard = () => {
 
     fetchDashboardData();
 
-    return () => links.forEach((link) => document.head.removeChild(link));
+    return () => {
+      links.forEach((link) => {
+        if (document.head.contains(link)) {
+          document.head.removeChild(link);
+        }
+      });
+    };
   }, []);
 
   // ===== Dynamic Count =====
   const totalWorkouts = workouts.length;
   const totalNutrition = nutrition.length;
 
-  // ===== Graph Data Calculation =====
-  // Map daily data counts for 7 days
-  const getDailyCount = (items) => {
+  // ===== FIXED: getDailyCount – Supports both 'createdAt' and 'date' =====
+  const getDailyCount = (items, dateField = "createdAt") => {
     const counts = Array(7).fill(0);
     items.forEach((item) => {
-      const date = new Date(item.createdAt);
+      const dateStr = item[dateField] || item.date;
+      if (!dateStr) return;
+
+      const date = new Date(dateStr);
+      if (isNaN(date.getTime())) return;
+
       const day = date.getDay(); // 0-6 (Sun-Sat)
       counts[day] += 1;
     });
     return counts;
   };
 
-  const workoutCounts = getDailyCount(workouts);
-  const nutritionCounts = getDailyCount(nutrition);
+  const workoutCounts = getDailyCount(workouts, "createdAt");
+  const nutritionCounts = getDailyCount(nutrition, "date");
 
   const labels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-  // ===== Combined Chart =====
+  // ===== Chart Data =====
   const combinedChartData = {
     labels,
     datasets: [
@@ -99,16 +111,19 @@ const Dashboard = () => {
         label: "Workouts",
         data: workoutCounts,
         backgroundColor: "#ff4500",
+        borderColor: "#ff4500",
+        borderWidth: 1,
       },
       {
         label: "Nutrition Entries",
         data: nutritionCounts,
         backgroundColor: "#4CAF50",
+        borderColor: "#4CAF50",
+        borderWidth: 1,
       },
     ],
   };
 
-  // ===== Workout Trend =====
   const workoutChartData = {
     labels,
     datasets: [
@@ -116,12 +131,13 @@ const Dashboard = () => {
         label: "Workouts per Day",
         data: workoutCounts,
         borderColor: "#ff4500",
-        fill: false,
+        backgroundColor: "rgba(255, 69, 0, 0.1)",
+        fill: true,
+        tension: 0.3,
       },
     ],
   };
 
-  // ===== Nutrition Trend =====
   const nutritionChartData = {
     labels,
     datasets: [
@@ -129,12 +145,42 @@ const Dashboard = () => {
         label: "Meals Logged per Day",
         data: nutritionCounts,
         borderColor: "#4CAF50",
-        fill: false,
+        backgroundColor: "rgba(76, 175, 80, 0.1)",
+        fill: true,
+        tension: 0.3,
       },
     ],
   };
 
-  if (loading) return <div className="p-5 text-center">Loading Dashboard...</div>;
+  // Chart Options (Common)
+  const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { position: "top", labels: { font: { size: 12 } } },
+      tooltip: { mode: "index", intersect: false },
+    },
+    scales: {
+      y: { beginAtZero: true, grid: { display: false } },
+      x: { grid: { display: false } },
+    },
+  };
+
+  if (loading) {
+    return (
+      <div className="wrapper">
+        <Sidebar />
+        <div className="main-panel">
+          <Navbar />
+          <div className="container mt-5 text-center">
+            <div className="spinner-border text-primary" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="wrapper">
@@ -146,7 +192,7 @@ const Dashboard = () => {
           <h3 className="fw-bold mb-4">Dashboard</h3>
 
           {/* ===== Top Stats ===== */}
-          <div className="row text-center mt-5 ms-3">
+          <div className="row text-center mt-5 ms-2">
             <div className="col-sm-6 col-md-3 mb-3">
               <StatsCard
                 icon="fa-dumbbell"
@@ -166,28 +212,40 @@ const Dashboard = () => {
           </div>
 
           {/* ===== Combined Graph ===== */}
-          <div className="row mt-4">
-            <div className="col-md-10 mx-auto">
-              <div className="card p-3 shadow-sm">
-                <h5 className="mb-3 text-center">Weekly Overview</h5>
-                <Bar data={combinedChartData} />
+          <div className="row mt-4 ms-2">
+            <div className="col-12">
+              <div className="card shadow-sm" style={{ height: "420px", overflow: "hidden" }}>
+                <div className="card-body p-3 d-flex flex-column">
+                  <h5 className="mb-3 text-center text-primary">Weekly Overview</h5>
+                  <div style={{ flex: 1, minHeight: 0 }}>
+                    <Bar data={combinedChartData} options={chartOptions} />
+                  </div>
+                </div>
               </div>
             </div>
           </div>
 
           {/* ===== Separate Graphs ===== */}
-          <div className="row mt-4 ms-2">
+          <div className="row mt-4 g-3 ms-2">
             <div className="col-md-6">
-              <div className="card p-3 shadow-sm">
-                <h5 className="mb-3 text-center">Workout Progress</h5>
-                <Line data={workoutChartData} />
+              <div className="card shadow-sm" style={{ height: "380px", overflow: "hidden" }}>
+                <div className="card-body p-3 d-flex flex-column">
+                  <h5 className="mb-3 text-center text-danger">Workout Progress</h5>
+                  <div style={{ flex: 1, minHeight: 0 }}>
+                    <Line data={workoutChartData} options={chartOptions} />
+                  </div>
+                </div>
               </div>
             </div>
 
             <div className="col-md-6">
-              <div className="card p-3 shadow-sm">
-                <h5 className="mb-3 text-center">Nutrition Trend</h5>
-                <Line data={nutritionChartData} />
+              <div className="card shadow-sm" style={{ height: "380px", overflow: "hidden" }}>
+                <div className="card-body p-3 d-flex flex-column">
+                  <h5 className="mb-3 text-center text-success">Nutrition Trend</h5>
+                  <div style={{ flex: 1, minHeight: 0 }}>
+                    <Line data={nutritionChartData} options={chartOptions} />
+                  </div>
+                </div>
               </div>
             </div>
           </div>

@@ -1,3 +1,4 @@
+// routes/auth.js
 import express from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
@@ -15,7 +16,7 @@ router.post("/register", async (req, res) => {
     if (!UserName || !UserEmail || !UserPassword)
       return res.status(400).json({ error: "All fields are required" });
 
-    const existingUser = await User.findOne({ UserEmail });
+    const existingUser = await User.findOne({ UserEmail: UserEmail.toLowerCase() });
     if (existingUser)
       return res.status(400).json({ error: "User already exists" });
 
@@ -35,7 +36,7 @@ router.post("/register", async (req, res) => {
   }
 });
 
-//  LOGIN
+// LOGIN
 router.post("/login", async (req, res) => {
   try {
     const { UserEmail, UserPassword } = req.body;
@@ -49,14 +50,14 @@ router.post("/login", async (req, res) => {
     const isMatch = await bcrypt.compare(UserPassword, user.UserPassword);
     if (!isMatch) return res.status(400).json({ error: "Invalid credentials" });
 
-    //Generate JWT Token
+    // Generate JWT Token
     const token = jwt.sign(
       { id: user._id, email: user.UserEmail },
       process.env.JWT_SECRET,
       { expiresIn: "7d" }
     );
 
-    // Send JWT in both Cookie AND Response (so frontend can use localStorage)
+    // Set JWT in HttpOnly Cookie
     res.cookie("token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
@@ -64,9 +65,9 @@ router.post("/login", async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
+    // Also send user data (so frontend can show name immediately)
     res.status(200).json({
       message: "Login successful",
-      token, // added this line (frontend will use this)
       user: {
         id: user._id,
         name: user.UserName,
@@ -79,9 +80,37 @@ router.post("/login", async (req, res) => {
   }
 });
 
+// GET CURRENT USER (for Navbar & Profile)
+router.get("/me", async (req, res) => {
+  try {
+    // Get token from cookie
+    const token = req.cookies.token;
+    if (!token) return res.status(401).json({ error: "No token, access denied" });
+
+    // Verify token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findById(decoded.id).select("-UserPassword");
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    res.json({
+      id: user._id,
+      name: user.UserName,
+      email: user.UserEmail,
+      profilePic: user.profilePic || "/img/profile.jpg", // fallback
+    });
+  } catch (err) {
+    console.error("Get me error:", err);
+    res.status(401).json({ error: "Token is not valid" });
+  }
+});
+
 // LOGOUT
 router.post("/logout", (req, res) => {
-  res.clearCookie("token");
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "Strict",
+  });
   res.status(200).json({ message: "Logged out successfully" });
 });
 

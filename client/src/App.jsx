@@ -8,12 +8,14 @@ import Blog from "./components/Blog";
 import Contact from "./components/Contact";
 import Footer from "./components/Footer";
 import Register from "./pages/Register";
-import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
-import Workouts from "./pages/Workouts";
+import Dashboard from "./pages/Dashboard";
+import Profile from "./pages/Profile";
 import Nutrition from "./pages/Nutrition";
 import ProtectedRoute from "./components/ProtectedRoute";
 import "./assets/css/style.css";
+import Workout from "./pages/Workout";
+import Progress from "./pages/Progress";
 
 const App = () => (
   <Router>
@@ -49,21 +51,36 @@ const App = () => (
           </ProtectedRoute>
         }
       />
-
-      <Route
-        path="/workouts"
-        element={
-          <ProtectedRoute>
-            <Workouts />
-          </ProtectedRoute>
-        }
-      />
-
       <Route
         path="/nutrition"
         element={
           <ProtectedRoute>
             <Nutrition />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/workouts"
+        element={
+          <ProtectedRoute>
+            <Workout />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/profile"
+        element={
+          <ProtectedRoute>
+            <Profile />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/progress"
+        element={
+          <ProtectedRoute>
+            <Progress />
           </ProtectedRoute>
         }
       />
