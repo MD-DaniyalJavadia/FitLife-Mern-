@@ -1,198 +1,149 @@
 import React, { useEffect, useState } from "react";
 
 const NutritionForm = ({ onSubmit, editing, onCancel }) => {
-  const [mealType, setMealType] = useState("breakfast");
-  const [foodName, setFoodName] = useState("");
-  const [calories, setCalories] = useState("");
-  const [protein, setProtein] = useState("");
-  const [carbs, setCarbs] = useState("");
-  const [fat, setFat] = useState("");
-  const [notes, setNotes] = useState("");
+  const [form, setForm] = useState({
+    mealName: "",
+    calories: "",
+    protein: "",
+    carbs: "",
+    fats: "",
+    notes: "",
+  });
 
   useEffect(() => {
-    if (editing) {
-      setMealType(editing.mealType);
-      setFoodName(editing.foodName);
-      setCalories(editing.calories);
-      setProtein(editing.protein);
-      setCarbs(editing.carbs);
-      setFat(editing.fat);
-      setNotes(editing.notes || "");
-    }
+    if (editing) setForm(editing);
   }, [editing]);
+
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const data = {
-      mealType,
-      foodName,
-      calories: Number(calories),
-      protein: Number(protein),
-      carbs: Number(carbs),
-      fat: Number(fat),
-      notes,
-    };
-    onSubmit(data, editing?._id);
-    if (!editing) resetForm();
-  };
-
-  const resetForm = () => {
-    setMealType("breakfast");
-    setFoodName("");
-    setCalories("");
-    setProtein("");
-    setCarbs("");
-    setFat("");
-    setNotes("");
+    onSubmit(form, editing?._id);
+    setForm({
+      mealName: "",
+      calories: "",
+      protein: "",
+      carbs: "",
+      fats: "",
+      notes: "",
+    });
   };
 
   return (
-    <div
-      style={{
-        maxWidth: "700px",
-        margin: "40px auto",
-        backgroundColor: "#fff",
-        borderRadius: "10px",
-        boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-        padding: "30px",
-      }}
-    >
-      <h3
+    <form onSubmit={handleSubmit} style={{ marginBottom: "20px" }}>
+      <div
         style={{
-          textAlign: "center",
-          fontWeight: "600",
-          marginBottom: "25px",
+          display: "grid",
+          gridTemplateColumns: "repeat(2, 1fr)",
+          gap: "10px",
+          marginBottom: "10px",
         }}
       >
-        Nutrition Tracker
-      </h3>
+        <input
+          type="text"
+          name="mealName"
+          placeholder="Meal Name"
+          value={form.mealName}
+          onChange={handleChange}
+          required
+          style={inputStyle}
+        />
 
-      <form onSubmit={handleSubmit}>
-        <div className="mb-3">
-          <label style={{ fontWeight: 500 }}>Food Name</label>
-          <input
-            type="text"
-            className="form-control"
-            value={foodName}
-            onChange={(e) => setFoodName(e.target.value)}
-            placeholder="Enter food name"
-            required
-          />
-        </div>
+        <input
+          type="number"
+          name="calories"
+          placeholder="Calories"
+          value={form.calories}
+          onChange={handleChange}
+          required
+          style={inputStyle}
+        />
 
-        <div className="mb-3">
-          <label style={{ fontWeight: 500 }}>Meal Type</label>
-          <select
-            className="form-control"
-            value={mealType}
-            onChange={(e) => setMealType(e.target.value)}
-          >
-            <option value="breakfast">Breakfast</option>
-            <option value="lunch">Lunch</option>
-            <option value="dinner">Dinner</option>
-            <option value="snack">Snack</option>
-          </select>
-        </div>
+        <input
+          type="number"
+          name="protein"
+          placeholder="Protein (g)"
+          value={form.protein}
+          onChange={handleChange}
+          style={inputStyle}
+        />
 
-        <h6 style={{ color: "green", fontWeight: 600, marginTop: "25px" }}>
-          Nutrition Facts
-        </h6>
+        <input
+          type="number"
+          name="carbs"
+          placeholder="Carbs (g)"
+          value={form.carbs}
+          onChange={handleChange}
+          style={inputStyle}
+        />
 
-        <div
-          style={{
-            border: "1px solid #ddd",
-            borderRadius: "8px",
-            padding: "15px",
-            marginBottom: "15px",
-          }}
-        >
-          <div className="row g-3 align-items-center">
-            <div className="col">
-              <label>Calories</label>
-              <input
-                type="number"
-                className="form-control"
-                value={calories}
-                onChange={(e) => setCalories(e.target.value)}
-              />
-            </div>
-            <div className="col">
-              <label>Protein (g)</label>
-              <input
-                type="number"
-                className="form-control"
-                value={protein}
-                onChange={(e) => setProtein(e.target.value)}
-              />
-            </div>
-            <div className="col">
-              <label>Carbs (g)</label>
-              <input
-                type="number"
-                className="form-control"
-                value={carbs}
-                onChange={(e) => setCarbs(e.target.value)}
-              />
-            </div>
-            <div className="col">
-              <label>Fat (g)</label>
-              <input
-                type="number"
-                className="form-control"
-                value={fat}
-                onChange={(e) => setFat(e.target.value)}
-              />
-            </div>
-          </div>
-        </div>
+        <input
+          type="number"
+          name="fats"
+          placeholder="Fats (g)"
+          value={form.fats}
+          onChange={handleChange}
+          style={inputStyle}
+        />
+      </div>
 
-        <div className="mb-3">
-          <label style={{ fontWeight: 500 }}>Notes</label>
-          <textarea
-            className="form-control"
-            rows="2"
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-            placeholder="Optional notes..."
-          ></textarea>
-        </div>
+      <textarea
+        name="notes"
+        placeholder="Notes (optional)"
+        value={form.notes}
+        onChange={handleChange}
+        rows="2"
+        style={{
+          width: "100%",
+          padding: "10px",
+          border: "1px solid #ccc",
+          borderRadius: "5px",
+          marginBottom: "10px",
+        }}
+      ></textarea>
 
-        {/* Green Add-style button (optional) */}
-        <button
-          type="button"
-          onClick={resetForm}
-          style={{
-            width: "100%",
-            backgroundColor: "#28a745",
-            color: "white",
-            border: "none",
-            borderRadius: "6px",
-            padding: "10px",
-            fontWeight: "500",
-            marginBottom: "15px",
-          }}
-        >
-          + Add Food
+      <div style={{ display: "flex", gap: "10px" }}>
+        <button type="submit" style={saveBtn}>
+          {editing ? "Update" : "Save"}
         </button>
-
-        {/* Orange Save button */}
-        <button
-          type="submit"
-          style={{
-            width: "100%",
-            backgroundColor: "#ff4500",
-            color: "white",
-            border: "none",
-            borderRadius: "6px",
-            padding: "10px",
-            fontWeight: "500",
-          }}
-        >
-          SAVE
-        </button>
-      </form>
-    </div>
+        {editing && (
+          <button type="button" onClick={onCancel} style={cancelBtn}>
+            Cancel
+          </button>
+        )}
+      </div>
+    </form>
   );
+};
+
+// Styles
+const inputStyle = {
+  width: "100%",
+  padding: "10px",
+  borderRadius: "5px",
+  border: "1px solid #ccc",
+};
+
+const saveBtn = {
+  flex: 1,
+  background: "#4CAF50",
+  color: "#fff",
+  border: "none",
+  padding: "10px",
+  borderRadius: "5px",
+  cursor: "pointer",
+};
+
+const cancelBtn = {
+  flex: 1,
+  background: "#999",
+  color: "#fff",
+  border: "none",
+  padding: "10px",
+  borderRadius: "5px",
+  cursor: "pointer",
 };
 
 export default NutritionForm;

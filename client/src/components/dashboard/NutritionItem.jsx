@@ -1,29 +1,68 @@
 import React from "react";
 
-const NutritionItem = ({ record, onEdit, onDelete }) => (
-  <div className="card mb-2 p-2">
-    <div className="d-flex justify-content-between align-items-start">
-      <div>
-        <h6 style={{ marginBottom: "2px" }}>
-          {record.foodName} ({record.mealType})
-        </h6>
-        <small>
-          {record.calories} kcal | P:{record.protein} g | C:{record.carbs} g |
-          F:{record.fat} g
-        </small>
-        {record.notes && <p className="mt-1">{record.notes}</p>}
-      </div>
+const NutritionItem = ({ record, onEdit, onDelete }) => {
+  return (
+    <div
+      style={{
+        background: "#fff",
+        borderRadius: "8px",
+        padding: "15px",
+        marginBottom: "10px",
+        border: "1px solid #eee",
+        boxShadow: "0 1px 4px rgba(0,0,0,0.08)",
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "start",
+        }}
+      >
+        <div>
+          <h4 style={{ margin: "0 0 5px 0", color: "#333" }}>
+            {record.foodName} ({record.mealType})
+          </h4>
+          <p style={{ margin: "0", color: "#555", fontSize: "14px" }}>
+            {record.calories} kcal | P:{record.protein}g | C:{record.carbs}g | F:{record.fat}g
+          </p>
+          {record.notes && (
+            <p style={{ marginTop: "5px", color: "#777" }}>{record.notes}</p>
+          )}
+        </div>
 
-      <div>
-        <button className="btn btn-sm btn-secondary me-2" onClick={onEdit}>
-          Edit
-        </button>
-        <button className="btn btn-sm btn-danger" onClick={onDelete}>
-          Delete
-        </button>
+        <div>
+          <button
+            onClick={onEdit}
+            style={{
+              background: "#4CAF50",
+              color: "#fff",
+              border: "none",
+              padding: "5px 10px",
+              borderRadius: "4px",
+              marginRight: "8px",
+              cursor: "pointer",
+            }}
+          >
+            Edit
+          </button>
+          <button
+            onClick={onDelete}
+            style={{
+              background: "#ff4500",
+              color: "#fff",
+              border: "none",
+              padding: "5px 10px",
+              borderRadius: "4px",
+              cursor: "pointer",
+            }}
+          >
+            Delete
+          </button>
+        </div>
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 export default NutritionItem;

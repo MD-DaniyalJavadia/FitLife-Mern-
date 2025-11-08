@@ -24,10 +24,15 @@ const Nutrition = () => {
   }, []);
 
   const saveRecord = async (data, id = null) => {
-    if (id) await api.put(`/api/nutrition/${id}`, data);
-    else await api.post("/api/nutrition", data);
-    fetchRecords();
-    setEditing(null);
+    try {
+      if (id) await api.put(`/api/nutrition/${id}`, data);
+      else await api.post("/api/nutrition", data);
+      fetchRecords();
+      setEditing(null);
+    } catch (err) {
+      console.error(err);
+      alert("Error saving nutrition record.");
+    }
   };
 
   const deleteRecord = async (id) => {
@@ -37,24 +42,41 @@ const Nutrition = () => {
   };
 
   return (
-    <div className="container mt-4">
-      <h3>Nutrition Tracker</h3>
+    <div
+      style={{
+        maxWidth: "700px",
+        margin: "50px auto",
+        background: "#fff",
+        padding: "30px",
+        borderRadius: "10px",
+        boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+      }}
+    >
+      <h2 style={{ textAlign: "center", marginBottom: "20px", color: "#333" }}>
+        Nutrition Tracker
+      </h2>
+
       <NutritionForm
         onSubmit={saveRecord}
         editing={editing}
         onCancel={() => setEditing(null)}
       />
+
       {loading ? (
         <p>Loading...</p>
+      ) : records.length === 0 ? (
+        <p style={{ textAlign: "center", color: "#777" }}>No records yet.</p>
       ) : (
-        records.map((r) => (
-          <NutritionItem
-            key={r._id}
-            record={r}
-            onEdit={() => setEditing(r)}
-            onDelete={() => deleteRecord(r._id)}
-          />
-        ))
+        <div style={{ marginTop: "20px" }}>
+          {records.map((r) => (
+            <NutritionItem
+              key={r._id}
+              record={r}
+              onEdit={() => setEditing(r)}
+              onDelete={() => deleteRecord(r._id)}
+            />
+          ))}
+        </div>
       )}
     </div>
   );
