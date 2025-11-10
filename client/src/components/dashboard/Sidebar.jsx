@@ -1,9 +1,30 @@
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const Sidebar = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const isActive = (path) => (location.pathname === path ? "active" : "");
+
+  const handleLogout = async (e) => {
+    e.preventDefault();
+    try {
+      // Call backend logout route
+      await axios.post(
+        "http://localhost:3000/api/auth/logout", // <-- adjust URL if needed
+        {},
+        { withCredentials: true }
+      );
+    localStorage.removeItem("token");
+
+      // Redirect to login page
+      navigate("/");
+    } catch (error) {
+      console.error("Logout failed:", error);
+      alert("Error logging out. Please try again.");
+    }
+  };
 
   return (
     <div className="sidebar" data-background-color="dark">
@@ -14,7 +35,7 @@ const Sidebar = () => {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          height: "80px", // Adjust this to your sidebar header height
+          height: "80px",
           backgroundColor: "#1a1a2e",
           borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
         }}
@@ -33,7 +54,7 @@ const Sidebar = () => {
             style={{
               fontSize: "22px",
               fontWeight: "700",
-              color: "#4CAF50", // green accent
+              color: "#4CAF50",
               letterSpacing: "1px",
             }}
           >
@@ -91,11 +112,12 @@ const Sidebar = () => {
               </Link>
             </li>
 
+            {/* Logout Button */}
             <li className="nav-item">
-              <Link to="/logout">
+              <a href="#!" onClick={handleLogout}>
                 <i className="fas fa-sign-out-alt"></i>
                 <p>Logout</p>
-              </Link>
+              </a>
             </li>
           </ul>
         </div>
