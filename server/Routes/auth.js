@@ -8,7 +8,9 @@ import dotenv from "dotenv";
 dotenv.config();
 const router = express.Router();
 
-// REGISTER
+/* ===========================
+   REGISTER
+=========================== */
 router.post("/register", async (req, res) => {
   try {
     const { UserName, UserEmail, UserPassword } = req.body;
@@ -36,7 +38,9 @@ router.post("/register", async (req, res) => {
   }
 });
 
-// LOGIN
+/* ===========================
+   LOGIN
+=========================== */
 router.post("/login", async (req, res) => {
   try {
     const { UserEmail, UserPassword } = req.body;
@@ -57,7 +61,7 @@ router.post("/login", async (req, res) => {
       { expiresIn: "7d" }
     );
 
-    // Set JWT in HttpOnly Cookie
+    //  Set token as HttpOnly cookie
     res.cookie("token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
@@ -65,9 +69,10 @@ router.post("/login", async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
-    // Also send user data (so frontend can show name immediately)
+    //  Also send it in response body (for frontend dev convenience)
     res.status(200).json({
       message: "Login successful",
+      token, // <-- added this line
       user: {
         id: user._id,
         name: user.UserName,
@@ -80,14 +85,14 @@ router.post("/login", async (req, res) => {
   }
 });
 
-// GET CURRENT USER (for Navbar & Profile)
+/* ===========================
+   GET CURRENT USER
+=========================== */
 router.get("/me", async (req, res) => {
   try {
-    // Get token from cookie
     const token = req.cookies.token;
     if (!token) return res.status(401).json({ error: "No token, access denied" });
 
-    // Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const user = await User.findById(decoded.id).select("-UserPassword");
     if (!user) return res.status(404).json({ error: "User not found" });
@@ -96,7 +101,7 @@ router.get("/me", async (req, res) => {
       id: user._id,
       name: user.UserName,
       email: user.UserEmail,
-      profilePic: user.profilePic || "/img/profile.jpg", // fallback
+      profilePic: user.profilePic || "/img/profile.jpg",
     });
   } catch (err) {
     console.error("Get me error:", err);
@@ -104,7 +109,9 @@ router.get("/me", async (req, res) => {
   }
 });
 
-// LOGOUT
+/* ===========================
+   LOGOUT
+=========================== */
 router.post("/logout", (req, res) => {
   res.clearCookie("token", {
     httpOnly: true,
